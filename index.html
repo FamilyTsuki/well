@@ -77,6 +77,69 @@
     </div>
     
     <script>
+        class ConfettiParticle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 8 + 4;
+                this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 15 + 5;
+                
+                this.vx = Math.cos(angle) * velocity;
+                this.vy = Math.sin(angle) * velocity - 5;
+                this.gravity = 0.3;
+                this.drag = 0.95;
+                
+                this.angle = Math.random() * Math.PI * 2;
+                this.angularVelocity = Math.random() * 0.2 - 0.1;
+            }
+
+            update() {
+                this.vx *= this.drag;
+                this.vy *= this.drag;
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.angle += this.angularVelocity;
+            }
+
+            draw(context) {
+                context.save();
+                context.translate(this.x, this.y);
+                context.rotate(this.angle);
+                context.fillStyle = this.color;
+                context.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+                context.restore();
+            }
+        }
+
+        class ConfettiManager {
+            constructor() {
+                this.particles = [];
+            }
+
+            explode(x, y, count) {
+                for (let i = 0; i < count; i++) {
+                    this.particles.push(new ConfettiParticle(x, y));
+                }
+            }
+
+            update() {
+                this.particles.forEach(p => p.update());
+                this.particles = this.particles.filter(p => p.y < window.innerHeight + 50);
+            }
+
+            draw(context) {
+                this.particles.forEach(p => p.draw(context));
+            }
+
+            clear() {
+                this.particles = [];
+            }
+        }
+
         class WheelController {
             constructor(canvasId, items) {
                 this.canvas = document.getElementById(canvasId);
@@ -92,6 +155,8 @@
                 this.friction = 0.985;
                 this.winner = null;
                 this.acceptedWinner = null;
+                
+                this.confettiManager = new ConfettiManager();
                 
                 this.initializeEvents();
                 this.renderList();
@@ -130,6 +195,8 @@
 
             triggerSpin() {
                 if (!this.isSpinning) {
+                    this.confettiManager.clear();
+                    
                     if (this.acceptedWinner && this.items.includes(this.acceptedWinner)) {
                         this.items = this.items.filter(item => item !== this.acceptedWinner);
                         this.itemCount = this.items.length;
@@ -157,6 +224,8 @@
                         this.determineWinner();
                     }
                 }
+                
+                this.confettiManager.update();
             }
 
             determineWinner() {
@@ -166,7 +235,8 @@
                 
                 this.winner = this.items[winningIndex];
                 this.acceptedWinner = this.winner;
-                this.render();
+                
+                this.confettiManager.explode(this.centerX, this.centerY, 150);
             }
 
             render() {
@@ -239,13 +309,15 @@
                 } else {
                     this.context.fillText('Press ENTER to spin', 20, 40);
                 }
+
+                this.confettiManager.draw(this.context);
             }
 
             runEngine() {
                 this.updatePhysics();
                 this.render();
                 
-                if (this.isSpinning) {
+                if (this.isSpinning || this.confettiManager.particles.length > 0) {
                     requestAnimationFrame(() => this.runEngine());
                 }
             }
