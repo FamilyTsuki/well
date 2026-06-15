@@ -18,6 +18,7 @@
         }
         canvas {
             display: block;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -46,12 +47,6 @@
 
             initializeEvents() {
                 window.addEventListener('resize', () => this.resizeCanvas());
-                
-                document.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter') {
-                        this.triggerSpin();
-                    }
-                });
                 
                 this.canvas.addEventListener('click', () => {
                     this.triggerSpin();
@@ -141,6 +136,20 @@
                     this.context.restore();
                 }
 
+                this.context.beginPath();
+                this.context.arc(this.centerX, this.centerY, 50, 0, 2 * Math.PI);
+                this.context.fillStyle = '#FFFFFF';
+                this.context.fill();
+                this.context.lineWidth = 4;
+                this.context.strokeStyle = '#333333';
+                this.context.stroke();
+
+                this.context.fillStyle = '#333333';
+                this.context.font = 'bold 18px Helvetica';
+                this.context.textAlign = 'center';
+                this.context.textBaseline = 'middle';
+                this.context.fillText('SPIN', this.centerX, this.centerY);
+
                 const pointerX = this.centerX + this.radius + 15;
                 this.context.beginPath();
                 this.context.moveTo(pointerX, this.centerY);
@@ -162,7 +171,7 @@
                 } else if (this.isSpinning) {
                     this.context.fillText('Spinning...', 20, 40);
                 } else {
-                    this.context.fillText('Press ENTER or CLICK to spin', 20, 40);
+                    this.context.fillText('Click anywhere to spin', 20, 40);
                 }
             }
 
