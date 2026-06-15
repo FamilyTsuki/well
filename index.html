@@ -8,27 +8,80 @@
         body {
             margin: 0;
             padding: 0;
+            font-family: Helvetica, sans-serif;
+            background-color: #f4f4f4;
+            overflow: hidden;
+        }
+        
+        #appContainer {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #sidebar {
+            width: 250px;
+            background-color: #ffffff;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        #sidebar h2 {
+            margin: 0;
+            padding: 20px;
+            font-size: 20px;
+            color: #333333;
+            border-bottom: 2px solid #f4f4f4;
+            text-align: center;
+        }
+
+        #wordList {
+            flex: 1;
+            overflow-y: auto;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #wordList li {
+            padding: 12px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #555555;
+            font-size: 16px;
+        }
+
+        #mainArea {
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-            overflow: hidden;
-            font-family: Helvetica, sans-serif;
+            position: relative;
         }
+
         canvas {
             display: block;
         }
     </style>
 </head>
 <body>
-    <canvas id="wheelCanvas"></canvas>
+    <div id="appContainer">
+        <div id="sidebar">
+            <h2>Participants</h2>
+            <ul id="wordList"></ul>
+        </div>
+        <div id="mainArea">
+            <canvas id="wheelCanvas"></canvas>
+        </div>
+    </div>
     
     <script>
         class WheelController {
             constructor(canvasId, items) {
                 this.canvas = document.getElementById(canvasId);
                 this.context = this.canvas.getContext('2d');
+                this.listContainer = document.getElementById('wordList');
                 
                 this.items = items;
                 this.itemCount = this.items.length;
@@ -41,6 +94,7 @@
                 this.acceptedWinner = null;
                 
                 this.initializeEvents();
+                this.renderList();
                 this.resizeCanvas();
             }
 
@@ -55,8 +109,9 @@
             }
 
             resizeCanvas() {
-                this.canvas.width = Math.min(window.innerWidth, 800);
-                this.canvas.height = Math.min(window.innerHeight, 800);
+                const container = this.canvas.parentElement;
+                this.canvas.width = Math.min(container.clientWidth, 800);
+                this.canvas.height = Math.min(container.clientHeight, 800);
                 this.centerX = this.canvas.width / 2;
                 this.centerY = this.canvas.height / 2;
                 this.radius = Math.min(this.centerX, this.centerY) - 60;
@@ -64,11 +119,21 @@
                 this.render();
             }
 
+            renderList() {
+                this.listContainer.innerHTML = '';
+                this.items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    this.listContainer.appendChild(li);
+                });
+            }
+
             triggerSpin() {
                 if (!this.isSpinning) {
                     if (this.acceptedWinner && this.items.includes(this.acceptedWinner)) {
                         this.items = this.items.filter(item => item !== this.acceptedWinner);
                         this.itemCount = this.items.length;
+                        this.renderList();
                     }
                     
                     if (this.itemCount > 0) {
@@ -195,7 +260,6 @@
             ];
             
             const app = new WheelController('wheelCanvas', sampleWords);
-            app.render();
         };
     </script>
 </body>
