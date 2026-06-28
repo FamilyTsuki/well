@@ -152,7 +152,7 @@
                 this.currentAngle = 0;
                 this.spinSpeed = 0;
                 this.isSpinning = false;
-                this.friction = 0.985;
+                this.friction = 0.95;
                 this.winner = null;
                 this.acceptedWinner = null;
                 
@@ -324,28 +324,20 @@
         }
 
         window.onload = () => {
-            const sampleWords = [
-                "Algorithme A* (Pathfinding)",
-                "Génération Procédurale 3D",
-                "Modération IA & Regex",
-                "Algorithme de Hot Score",
-                "Synchronisation PvP WebSockets",
-                "Moteur de Sorts par Frappe",
-                "Machine à États du Moteur",
-                "Éditeur de Niveaux Intégré",
-                "Sécurité API & Rate Limiting",
-                "Responsive WebGL Dynamique",
-                "Pipeline de Traitement d'Images",
-                "Physique des Sauts en Parabole",
-                "Génération de Carte Linéaire",
-                "Système de Sauvegarde Hybride",
-                "Détection de Collisions 3D",
-                "Système d'Avertissements (Strikes)",
-                "Calculateur WPM Temps Réel",
-                "Architecture MVC & POO Vanilla"
+            const wheelOptions = [
+                "A*",
+                "Hot score",
+                "La sécurité",
+                "Comment j'ai optimisé le jeu",
+                "Les plus grosses difficultés du développement",
+                "Conformité Légale & RGPD",
+                "Mon architecture SQL",
+                "Signalement de la page hub automatique et manuelle",
+                "L'ia",
+                "Les points faibles de mon site"
             ];
             
-            const app = new WheelController('wheelCanvas', sampleWords);
+            const app = new WheelController('wheelCanvas', wheelOptions);
         };
     </script>
 </body>
