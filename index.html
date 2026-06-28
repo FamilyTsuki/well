@@ -239,6 +239,25 @@
                 this.confettiManager.explode(this.centerX, this.centerY, 150);
             }
 
+            getWrappedLines(text, maxWidth) {
+                const words = text.split(' ');
+                const lines = [];
+                let currentLine = words[0];
+
+                for (let i = 1; i < words.length; i++) {
+                    const word = words[i];
+                    const width = this.context.measureText(currentLine + " " + word).width;
+                    if (width < maxWidth) {
+                        currentLine += " " + word;
+                    } else {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    }
+                }
+                lines.push(currentLine);
+                return lines;
+            }
+
             render() {
                 this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 
@@ -267,8 +286,17 @@
                     this.context.textAlign = 'right';
                     this.context.textBaseline = 'middle';
                     this.context.fillStyle = '#333333';
-                    this.context.font = 'bold 18px Helvetica';
-                    this.context.fillText(this.items[i], this.radius - 20, 0);
+                    this.context.font = 'bold 14px Helvetica';
+                    
+                    const maxTextWidth = this.radius - 80;
+                    const lines = this.getWrappedLines(this.items[i], maxTextWidth);
+                    const lineHeight = 16;
+                    const startY = -(lines.length - 1) * lineHeight / 2;
+
+                    for (let j = 0; j < lines.length; j++) {
+                        this.context.fillText(lines[j], this.radius - 20, startY + (j * lineHeight));
+                    }
+                    
                     this.context.restore();
                 }
 
@@ -327,14 +355,14 @@
             const wheelOptions = [
                 "A*",
                 "Hot score",
-                "La sécurité",
-                "Comment j'ai optimisé le jeu",
-                "Les plus grosses difficultés du développement",
-                "Conformité Légale & RGPD",
-                "Mon architecture SQL",
-                "Signalement de la page hub automatique et manuelle",
-                "L'ia",
-                "Les points faibles de mon site"
+                "Sécurité",
+                "Optimisation",
+                "Difficultés dev",
+                "Légal & RGPD",
+                "Architecture SQL",
+                "Signalements",
+                "IA",
+                "Points faibles"
             ];
             
             const app = new WheelController('wheelCanvas', wheelOptions);
